@@ -9,7 +9,8 @@ public class InputManager : MonoBehaviour, Controls.IPlayerActions
     private Controls _controls;
 
     #region Public Values
-    public Vector2 MovementValue { private set; get; }
+    public Vector2 MovementValue { private set; get; } = Vector2.zero;
+    public bool IsRunning { private set; get; } = false;
     #endregion
 
     #region Events
@@ -59,7 +60,9 @@ public class InputManager : MonoBehaviour, Controls.IPlayerActions
     }
 
     public void OnMovement(InputAction.CallbackContext context) =>
-        MovementValue = context.ReadValue<Vector2>();
+        MovementValue = new Vector2(context.ReadValue<Vector2>().x, 0);
 
     public void OnInteract(InputAction.CallbackContext context) => InteractEvent?.Invoke();
+
+    public void OnSprint(InputAction.CallbackContext context) => IsRunning = context.performed;
 }

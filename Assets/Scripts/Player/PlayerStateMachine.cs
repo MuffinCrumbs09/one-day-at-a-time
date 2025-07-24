@@ -19,14 +19,32 @@ public class PlayerStateMachine : StateMachine
     public Animator _anim { private set; get; }
     #endregion
 
-    #region Visible
+    #region PlayerMovementState
+    [Header("PlayerMovement State")]
     [field: SerializeField]
-    public float walkSpeed { get; private set; }
+    public PlayerMovementStats _stats { set; get; }
 
+    [field: SerializeField]
+    public Collider2D _feetCol { set; get; }
+
+    [field: SerializeField]
+    public Collider2D _bodyCol { set; get; }
+    public bool isFacingRight { set; get; } = true;
+    public float currentSpeed { set; get; } = 0f;
+    #endregion
+
+    #region Collision Checks
+    public RaycastHit2D _groundHit { set; get; }
+    public RaycastHit2D _headHit { set; get; }
+    public bool _isGrounded { set; get; }
+    public bool _bumpedHead { set; get; }
+    #endregion
+
+    #region Visible
     [field: SerializeField]
     public float interactRadius { get; set; }
     #endregion
-    public bool isFacingRight { get; set; }
+
     private void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -35,42 +53,4 @@ public class PlayerStateMachine : StateMachine
         SwitchState(new PlayerIdleState(this));
     }
 
-    List<Collider2D> nearbyColliders = new List<Collider2D>();
-
-    public void NearbyColliders()
-    {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, interactRadius);
-        List<Collider2D> currentFrameColliders = new List<Collider2D>(hitColliders);
-
-        foreach (Collider2D col in currentFrameColliders)
-        {
-            if (!nearbyColliders.Contains(col))
-                nearbyColliders.Add(col);
-
-            if (col.TryGetComponent<IInteractable>(out IInteractable interact))
-            {
-                col.GetComponent<SpriteRenderer>()
-                    .material.SetVector(
-                        "_OutlineThickness",
-                        new Vector4(0.025f, 0.025f, -0.025f, -0.025f)
-                    );
-            }
-        }
-
-        for (int i = nearbyColliders.Count - 1; i >= 0; i--)
-        {
-            Collider2D col = nearbyColliders[i];
-            if (!currentFrameColliders.Contains(col))
-            {
-                if (col != null && col.TryGetComponent<IInteractable>(out IInteractable interact))
-                {
-                    // Reset outline thickness before removing
-                    col.GetComponent<SpriteRenderer>()
-                        .material.SetVector("_OutlineThickness", Vector4.zero);
-                }
-
-                nearbyColliders.RemoveAt(i);
-            }
-        }
-    }
 }
