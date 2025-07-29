@@ -6,9 +6,15 @@ public abstract class StateMachine : MonoBehaviour
     private bool _isSwitching;
 
     // Tick when not switching
+    private void Update()
+    {
+        _curState.Tick(Time.deltaTime);
+    }
+
+    // Fixed Tick for physics
     private void FixedUpdate()
     {
-        _curState.Tick(Time.fixedDeltaTime);
+        _curState.FixedTick(Time.fixedDeltaTime);
     }
 
     // Switch State

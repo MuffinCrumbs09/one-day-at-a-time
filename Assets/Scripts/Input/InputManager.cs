@@ -11,6 +11,9 @@ public class InputManager : MonoBehaviour, Controls.IPlayerActions
     #region Public Values
     public Vector2 MovementValue { private set; get; } = Vector2.zero;
     public bool IsRunning { private set; get; } = false;
+    public bool JumpWasPressed { private set; get; } = false;
+    public bool JumpIsHeld { private set; get; } = false;
+    public bool JumpWasReleased { private set; get; } = false;
     #endregion
 
     #region Events
@@ -33,6 +36,22 @@ public class InputManager : MonoBehaviour, Controls.IPlayerActions
 
         ToggleControls(true);
         ToggleCursor(false);
+    }
+
+    private void LateUpdate()
+    {
+        JumpWasPressed = false;
+        JumpWasReleased = false;
+    }
+
+    private void OnDestroy()
+    {
+        // Destroy Controls If Exists
+        if (_controls != null)
+        {
+            _controls.Player.RemoveCallbacks(this);
+            _controls.Dispose();
+        }
     }
 
     // Enable or Disable Cursor
@@ -65,4 +84,18 @@ public class InputManager : MonoBehaviour, Controls.IPlayerActions
     public void OnInteract(InputAction.CallbackContext context) => InteractEvent?.Invoke();
 
     public void OnSprint(InputAction.CallbackContext context) => IsRunning = context.performed;
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            JumpWasPressed = true;
+            JumpIsHeld = true;
+        }
+        else if (context.canceled)
+        {
+            JumpWasReleased = true;
+            JumpIsHeld = false;
+        }
+    }
 }

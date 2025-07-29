@@ -33,6 +33,30 @@ public class PlayerStateMachine : StateMachine
     public float currentSpeed { set; get; } = 0f;
     #endregion
 
+    #region PlayerJumpVars
+    public float verticalVelocity;
+    public bool isJumping;
+    public bool isFastFalling;
+    public bool isFalling;
+    public float fastFallTime;
+    public float fastFallReleaseSpeed;
+    public int numberOfJumpsUsed;
+    #endregion
+
+    #region Apex Vars
+    public float apexPoint;
+    public float timePastApexPoint;
+    public bool isPastApexPoint;
+    #endregion
+
+    #region Jump Buffer Vars
+    public float jumpBufferTime;
+    public bool jumpReleaseDuringBuffer;
+    #endregion
+
+    // Coyote Time Vars
+    public float coyoteTime;
+
     #region Collision Checks
     public RaycastHit2D _groundHit { set; get; }
     public RaycastHit2D _headHit { set; get; }
